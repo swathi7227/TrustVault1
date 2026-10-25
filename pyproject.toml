@@ -1,4 +1,22 @@
 
+[project]
+name = "trustvault"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi==0.161.1",
+    "uvicorn==0.54.0",
+    "SQLAlchemy==2.1.6",
+    "alembic==1.20.1",
+    "psycopg[binary]==3.3.6",
+    "pydantic-settings==2.16.1",
+    "pwdlib==0.3.1",
+    "PyJWT==2.15.1",
+    "python-multipart==0.0.32",
+    "python-dotenv==1.2.4",
+]
+
 [tool.vercel]
 entrypoint = "backend.app.main:app"
+
 
