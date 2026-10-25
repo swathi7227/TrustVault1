@@ -160,3 +160,24 @@ def test_revoked_permission_blocks_download(
         headers={"Authorization": f"Bearer {other_token}"},
     )
     assert download_response.status_code == 404
+
+def test_inactive_user_cannot_access_documents(
+    client, test_db, test_users
+):
+    from backend.app.auth.security import create_access_token
+
+    _, other_user = test_users
+    other_user.is_active = False
+    test_db.commit()
+
+    token = create_access_token(
+        user_id=other_user.id,
+        role=other_user.role,
+    )
+
+    response = client.get(
+        "/documents",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 401
