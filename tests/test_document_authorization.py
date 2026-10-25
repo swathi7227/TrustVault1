@@ -65,3 +65,48 @@ def test_owner_can_download_document(
 
     assert response.status_code == 200
     assert response.content == b"TrustVault test"
+def test_owner_can_grant_read_permission(
+    client, test_users, test_document
+):
+    owner, other_user = test_users
+
+    token = create_access_token(
+        user_id=owner.id,
+        role=owner.role,
+    )
+
+    response = client.put(
+        f"/documents/{test_document.id}/permissions",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "user_id": other_user.id,
+            "can_read": True,
+            "can_edit": False,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["can_read"] is True
+
+
+def test_non_owner_cannot_grant_permission(
+    client, test_users, test_document
+):
+    _, other_user = test_users
+
+    token = create_access_token(
+        user_id=other_user.id,
+        role=other_user.role,
+    )
+
+    response = client.put(
+        f"/documents/{test_document.id}/permissions",
+        headers={"Authorization": f"Bearer {token}"},
+        json={
+            "user_id": other_user.id,
+            "can_read": True,
+            "can_edit": False,
+        },
+    )
+
+    assert response.status_code == 404
